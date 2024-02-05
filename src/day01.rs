@@ -9,26 +9,21 @@ fn calc_line(line: &String) -> i32 {
 }
 
 fn replace_line(line: &String) -> String {
-    let s = match line.as_str() {
-        l if line.starts_with("one") => l.replacen("one", "o1e", 1),
-        l if line.starts_with("two") => l.replacen("two", "t2o", 1),
-        l if line.starts_with("three") => l.replacen("three", "t3e", 1),
-        l if line.starts_with("four") => l.replacen("four", "f4r", 1),
-        l if line.starts_with("five") => l.replacen("five", "f5e", 1),
-        l if line.starts_with("six") => l.replacen("six", "s6x", 1),
-        l if line.starts_with("seven") => l.replacen("seven", "s7n", 1),
-        l if line.starts_with("eight") => l.replacen("eight", "e8t", 1),
-        l if line.starts_with("nine") => l.replacen("nine", "n9e", 1),
-        l => l.to_string()
-    };
+    let mut out = line.clone();
+    let ns: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
-    let head: String = s.chars().take(1).collect();
-    let tail: String = s.chars().skip(1).collect();
+    for (i, n) in ns.iter().enumerate() {
+        if out.starts_with(n) {
+            out = out.replacen(n, &format!("{}{}{}", n.chars().nth(0).unwrap(), i+1, n.chars().last().unwrap()), 1);
+            break
+        }
+    }
 
-    if tail.len() > 0 {
-        head + &replace_line(&tail)
+    if out.len() > 1 {
+        let (head, tail) = out.split_at(1);
+        head.to_string() + &replace_line(&tail.to_string())
     } else {
-        head
+        out
     }
 }
 
