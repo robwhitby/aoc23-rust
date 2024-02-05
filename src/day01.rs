@@ -6,22 +6,13 @@ fn calc_line(line: &String) -> i32 {
 }
 
 fn replace_line(line: &String) -> String {
-    let ns: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    let out: String = ns
-        .iter().enumerate()
-        .find_map(|(i,n)| line.starts_with(n).then(|| {
-            line.replacen(n, &format!("{}{}{}", n.chars().next().unwrap(), i+1, n.chars().last().unwrap()), 1)
-        }))
-        .unwrap_or(line.clone());
-
-    if out.len() > 1 {
-        let (head, tail) = out.split_at(1);
-        head.to_string() + &replace_line(&tail.to_string())
-    } else {
-        out
+    let nums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    let mut out = line.clone();
+    for (i,n) in nums.iter().enumerate() {
+        out = out.replace(n, &format!("{}{}{}", n, i+1, n))
     }
+    out
 }
-
 
 fn part1(input: Vec<String>) -> i32 {
     input.iter().map(calc_line).sum()
