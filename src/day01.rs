@@ -1,7 +1,7 @@
 fn calc_line(line: &String) -> i32 {
     let digits: Vec<char> = line
         .chars()
-        .filter(|c| c.is_digit(10))
+        .filter(char::is_ascii_digit)
         .collect();
 
     let s = format!("{}{}", digits.first().unwrap(), digits.last().unwrap());
@@ -51,18 +51,18 @@ mod tests {
          std::fs::read_to_string("inputs/".to_string() + filename)
              .unwrap()
              .lines()
-             .map(|x| x.to_string())
+             .map(str::to_string)
              .collect()
     }
 
     #[test]
-    fn p1() {
+    fn test_part1() {
         assert_eq!(part1(read("day01ex.txt")), 142);
         println!("{}", part1(read("day01.txt")));
     }
 
     #[test]
-    fn p2() {
+    fn test_part2() {
         assert_eq!(part2(read("day01ex2.txt")), 281);
         println!("{}", part2(read("day01.txt")));
     }
