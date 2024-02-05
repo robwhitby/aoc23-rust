@@ -1,10 +1,9 @@
 fn calc_line(line: &String) -> i32 {
-    let digits: Vec<char> = line
+    let mut digits = line
         .chars()
-        .filter(char::is_ascii_digit)
-        .collect();
+        .filter(char::is_ascii_digit);
 
-    let s = format!("{}{}", digits.first().unwrap(), digits.last().unwrap());
+    let s = format!("{}{}", digits.next().unwrap(), digits.last().unwrap());
     s.parse().unwrap()
 }
 
