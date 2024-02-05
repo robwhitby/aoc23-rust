@@ -5,7 +5,7 @@ fn calc_line(line: &String) -> i32 {
         .collect();
 
     let s = format!("{}{}", digits.first().unwrap(), digits.last().unwrap());
-    s.parse::<i32>().unwrap()
+    s.parse().unwrap()
 }
 
 fn replace_line(line: &String) -> String {
