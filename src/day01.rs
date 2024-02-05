@@ -1,10 +1,8 @@
 fn calc_line(line: &String) -> i32 {
-    let mut digits = line
-        .chars()
-        .filter(char::is_ascii_digit);
-
-    let s = format!("{}{}", digits.next().unwrap(), digits.last().unwrap());
-    s.parse().unwrap()
+    let mut digits = line.chars().filter(char::is_ascii_digit);
+    let a = digits.next().unwrap();
+    let b = digits.last().unwrap_or(a);
+    format!("{}{}", a, b).parse().unwrap()
 }
 
 fn replace_line(line: &String) -> String {
