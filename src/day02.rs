@@ -13,11 +13,11 @@ fn parse_game(id: i32, line: &String) -> Game {
         Regex::new(&format!(r"(\d+) {}", c))
             .unwrap()
             .captures_iter(line)
-            .map(|caps| caps.get(1).unwrap().as_str().parse::<i32>().unwrap())
+            .flat_map(|caps| caps.get(1).unwrap().as_str().parse::<i32>())
             .max()
             .unwrap()
     };
-    Game{ id: id, r: colour("red"), g: colour("green"), b: colour("blue") }
+    Game{ id, r: colour("red"), g: colour("green"), b: colour("blue") }
 }
 
 fn part1(input: Vec<String>) -> i32 {
