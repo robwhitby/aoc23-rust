@@ -1,4 +1,4 @@
-use regex::{Regex};
+use regex::Regex;
 
 #[derive(Debug)]
 struct Game {
@@ -17,22 +17,28 @@ fn parse_game(id: i32, line: &String) -> Game {
             .max()
             .unwrap()
     };
-    Game{ id, r: colour("red"), g: colour("green"), b: colour("blue") }
+    Game {
+        id,
+        r: colour("red"),
+        g: colour("green"),
+        b: colour("blue"),
+    }
 }
 
 fn part1(input: Vec<String>) -> i32 {
     input
-        .iter().enumerate()
+        .iter()
+        .enumerate()
         .map(|(idx, line)| parse_game(idx as i32 + 1, line))
         .filter(|g| g.r <= 12 && g.g <= 13 && g.b <= 14)
         .map(|g| g.id)
         .sum()
-
 }
 
 fn part2(input: Vec<String>) -> i32 {
     input
-        .iter().enumerate()
+        .iter()
+        .enumerate()
         .map(|(idx, line)| parse_game(idx as i32 + 1, line))
         .map(|g| g.r * g.g * g.b)
         .sum()
