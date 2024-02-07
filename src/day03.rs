@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 struct Point {
     x: i32,
     y: i32,
@@ -53,11 +53,46 @@ impl Iterator for GridIter<'_> {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+struct Number{
+    p: Point,
+    value: i32,
+}
+
+impl Number {
+    fn neighbours(&self, grid: &Grid) -> Vec<Point> {
+        ((self.p.x - 1)..=(self.p.x + self.value.to_string().len() as i32))
+            .flat_map(|x| ((self.p.y - 1)..=(self.p.y + 1)).map(move |y| (x, y)))
+            .flat_map(|(x,y)| grid.get(x,y))
+            .collect()
+    }
+}
+
+fn parse_numbers(grid: &Grid) -> Vec<Number> {
+    let mut nums: Vec<Number> = vec![];
+    let mut start: Option<Point> = None;
+    let mut acc = "".to_string();
+    for p in grid.iter() {
+        if p.value.is_ascii_digit() && p.y == start.map(|p| p.y).unwrap_or(p.y) {
+            start = start.or(Some(p));
+            acc.push(p.value)
+        }
+        else if start.is_some() {
+            nums.push(Number{p: start.unwrap(), value: acc.parse().unwrap() });
+            start = None;
+            acc = "".to_string()
+        }
+    }
+    nums
+}
+
 fn part1(input: Vec<String>) -> i32 {
-    Grid(input)
+    let grid = Grid(input);
+    parse_numbers(&grid)
         .iter()
-        .filter(|p| p.value.is_ascii_digit())
-        .count() as i32
+        .filter(|n| n.neighbours(&grid).iter().find(|p| !p.value.is_ascii_digit() && p.value != '.').is_some())
+        .map(|n| n.value)
+        .sum()
 }
 
 fn part2(input: Vec<String>) -> i32 {
