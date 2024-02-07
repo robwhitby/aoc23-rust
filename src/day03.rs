@@ -37,7 +37,7 @@ fn part1(input: Vec<String>) -> i32 {
     let grid = Grid(input);
     parse_numbers(&grid)
         .iter()
-        .filter(|n| n.neighbours(&grid).iter().find(|p| !p.value.is_ascii_digit() && p.value != '.').is_some())
+        .filter(|n| n.neighbours(&grid).iter().any(|p| !p.value.is_ascii_digit() && p.value != '.'))
         .map(|n| n.value)
         .sum()
 }
