@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 fn part1(input: Vec<String>) -> i32 {
     input
@@ -15,7 +15,16 @@ fn matches(card: &String) -> i32 {
 }
 
 fn part2(input: Vec<String>) -> i32 {
-    2
+    let mut wins: HashMap<usize, i32> = HashMap::new();
+
+    for (i, line) in input.iter().enumerate() {
+        let matches = matches(line) as usize;
+        for w in (i + 1)..=(i + matches) {
+            *wins.entry(w).or_insert(0) += wins.get(&i).unwrap_or(&0) + 1;
+        }
+    }
+
+    wins.values().sum::<i32>() + input.len() as i32
 }
 
 #[cfg(test)]
