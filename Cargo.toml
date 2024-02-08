@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 regex = { version = "1.10.3", features = [] }
+itertools = "0.12.1"
