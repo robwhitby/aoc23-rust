@@ -10,6 +10,10 @@ impl Data {
     fn convert(&self, i: &i64) -> i64 {
         self.converters.iter().fold(i.to_owned(), |acc, i| i.convert(&acc))
     }
+
+    fn reverse(&self, i: &i64) -> i64 {
+        self.converters.iter().rev().fold(i.to_owned(), |acc, i| i.reverse(&acc))
+    }
 }
 
 struct Converter(Vec<Offset>);
@@ -17,6 +21,10 @@ struct Converter(Vec<Offset>);
 impl Converter {
     fn convert(&self, i: &i64) -> i64 {
         self.0.iter().find(|o| o.range.contains(&i)).map(|o| o.delta).unwrap_or(0) + i
+    }
+
+    fn reverse(&self, i: &i64) -> i64 {
+        self.0.iter().find(|o| o.range.contains(&(i - o.delta))).map(|o| i - o.delta).unwrap_or(i.to_owned())
     }
 }
 
@@ -53,7 +61,6 @@ fn parse_input(input: Vec<String>) -> Data {
     Data{ seeds, converters }
 }
 
-
 fn part1(input: Vec<String>) -> i64 {
     let data = parse_input(input);
     data.seeds
@@ -63,10 +70,17 @@ fn part1(input: Vec<String>) -> i64 {
         .unwrap()
 }
 
-
-
 fn part2(input: Vec<String>) -> i64 {
-    2
+    let data = parse_input(input);
+    let seeds: Vec<Range<i64>> = data.seeds.iter()
+        .tuples()
+        .map(|(a,b)| a.to_owned()..a+b)
+        .collect();
+
+    (1..)
+        .find(|i| seeds.iter().any(|r| r.contains(&data.reverse(i))))
+        .unwrap()
+
 }
 
 #[cfg(test)]
