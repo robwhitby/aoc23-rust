@@ -1,33 +1,40 @@
+use std::collections::HashSet;
 use crate::grid::*;
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
-struct Number{
-    p: Point,
-    value: i32,
-}
+#[derive(Debug, PartialEq, Eq, Clone)]
+struct Number(Vec<Point>);
 
 impl Number {
-    fn neighbours(&self, grid: &Grid) -> Vec<Point> {
-        ((self.p.x - 1)..=(self.p.x + self.value.to_string().len() as i32))
-            .flat_map(|x| ((self.p.y - 1)..=(self.p.y + 1)).map(move |y| (x, y)))
-            .flat_map(|(x,y)| grid.get(x,y))
+    fn neighbours(&self, grid: &Grid) -> HashSet<Point> {
+        self.0.iter()
+            .flat_map(|p| grid.neighbours(p))
+            .filter(|p| !self.0.contains(p))
             .collect()
+    }
+
+    fn value(&self) -> i32 {
+        self.0.iter()
+            .map(|p| p.value)
+            .collect::<String>()
+            .parse()
+            .unwrap()
+    }
+
+    fn contains(&self, p: &Point) -> bool {
+        self.0.contains(p)
     }
 }
 
 fn parse_numbers(grid: &Grid) -> Vec<Number> {
     let mut nums: Vec<Number> = vec![];
-    let mut start: Option<Point> = None;
-    let mut acc = "".to_string();
+    let mut current: Vec<Point> = vec![];
     for p in grid.iter() {
-        if p.value.is_ascii_digit() && p.y == start.map(|p| p.y).unwrap_or(p.y) {
-            start = start.or(Some(p));
-            acc.push(p.value)
+        if p.value.is_ascii_digit() && p.y == current.get(0).map(|n| n.y).unwrap_or(p.y) {
+            current.push(p)
         }
-        else if start.is_some() {
-            nums.push(Number{p: start.unwrap(), value: acc.parse().unwrap() });
-            start = None;
-            acc = "".to_string()
+        else if current.len() > 0 {
+            nums.push(Number(current.clone()));
+            current.clear();
         }
     }
     nums
@@ -38,12 +45,23 @@ fn part1(input: Vec<String>) -> i32 {
     parse_numbers(&grid)
         .iter()
         .filter(|n| n.neighbours(&grid).iter().any(|p| !p.value.is_ascii_digit() && p.value != '.'))
-        .map(|n| n.value)
+        .map(|n| n.value())
         .sum()
 }
 
 fn part2(input: Vec<String>) -> i32 {
-    1
+    let grid = Grid(input);
+    let numbers = parse_numbers(&grid);
+
+    grid
+        .iter()
+        .filter(|p| p.value == '*')
+        .filter_map(|s| {
+            let ns = grid.neighbours(&s);
+            let nums: Vec<&Number> = numbers.iter().filter(|num| ns.iter().any(|n| num.contains(n))).collect();
+            (nums.len() == 2).then(|| {nums[0].value() * nums[1].value()})
+        })
+        .sum()
 }
 
 #[cfg(test)]

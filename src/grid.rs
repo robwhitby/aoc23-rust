@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+use std::collections::HashSet;
+
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Hash)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -8,10 +10,6 @@ pub struct Point {
 pub struct Grid(pub Vec<String>);
 
 impl Grid {
-    pub fn contains(&self, x: i32, y: i32) -> bool {
-        self.get(x, y).is_some()
-    }
-
     pub fn get(&self, x: i32, y: i32) -> Option<Point> {
         self.0
             .get(y as usize)
@@ -19,10 +17,11 @@ impl Grid {
             .map(|value| Point { x, y, value })
     }
 
-    pub fn neighbours(&self, x: i32, y: i32) -> Vec<(i32, i32)> {
-        ((x - 1)..=(x + 1))
-            .flat_map(|x| ((y - 1)..=(y + 1)).map(move |y| (x, y)))
-            .filter(|&n| n != (x, y))
+    pub fn neighbours(&self, p: &Point) -> HashSet<Point> {
+        ((p.x - 1)..=(p.x + 1))
+            .flat_map(|x| ((p.y - 1)..=(p.y + 1)).map(move |y| (x, y)))
+            .filter(|&n| n != (p.x, p.y))
+            .flat_map(|(x,y)| self.get(x,y))
             .collect()
     }
 
